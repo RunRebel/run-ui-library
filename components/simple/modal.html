@@ -1,0 +1,118 @@
+<!-- Modal Simple - 0kb extra runtime -->
+<div data-cs="modal" data-closeable="true" data-title="Mi Modal">
+  <style>
+    [data-cs="modal"] {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      place-items: center;
+      z-index: 1000;
+      animation: fadeIn 200ms ease;
+    }
+    
+    [data-cs="modal"].is-open {
+      display: grid;
+    }
+    
+    [data-cs="modal"] .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      max-width: min(90vw, 500px);
+      position: relative;
+    }
+    
+    [data-cs="modal"] .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    [data-cs="modal"] .modal-close:hover {
+      color: #000;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+    }
+  </style>
+  
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <button class="modal-close" aria-label="Cerrar">×</button>
+    <h2 class="modal-title"></h2>
+    <div class="modal-body">
+      <!-- Contenido dinámico -->
+    </div>
+  </div>
+  
+  <script>
+  CS.modal = {
+    init() {
+      // Referencias DOM
+      this.content = this.$('.modal-content');
+      this.closeBtn = this.$('.modal-close');
+      this.titleEl = this.$('.modal-title');
+      this.bodyEl = this.$('.modal-body');
+      
+      // Set title
+      if (this.config.title) {
+        this.titleEl.textContent = this.config.title;
+      }
+      
+      // Close button
+      this.closeBtn.onclick = () => this.close();
+      
+      // Click outside
+      this.el.onclick = (e) => {
+        if (e.target === this.el && this.config.closeable) {
+          this.close();
+        }
+      };
+      
+      // Escape key
+      this.escHandler = (e) => {
+        if (e.key === 'Escape' && this.config.closeable) {
+          this.close();
+        }
+      };
+      
+      // Global open event
+      this.on('modal:open', (data) => {
+        if (data.target === this.el.id || !data.target) {
+          this.open(data.content, data.title);
+        }
+      });
+    },
+    
+    open(content, title) {
+      this.el.classList.add('is-open');
+      
+      if (content) {
+        this.bodyEl.innerHTML = content;
+      }
+      
+      if (title) {
+        this.titleEl.textContent = title;
+      }
+      
+      document.addEventListener('keydown', this.escHandler);
+      this.emit('opened');
+      
+      // Focus management
+      this.content.focus();
+    },
+    
+    close() {
+      this.el.classList.remove('is-open');
+      document.removeEventListener('keydown', this.escHandler);
+      this.emit('closed');
+    }
+  };
+  </script>
+</div>

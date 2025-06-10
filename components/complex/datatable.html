@@ -1,0 +1,315 @@
+<!-- DataTable Complejo - Necesita CS.vdom (+13kb total) -->
+<div data-cs="datatable" data-source="/api/users" data-pagesize="10">
+  <style>
+    [data-cs="datatable"] {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    
+    [data-cs="datatable"] .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    
+    [data-cs="datatable"] .search {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 0.25rem;
+      width: 300px;
+    }
+    
+    [data-cs="datatable"] table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    [data-cs="datatable"] th,
+    [data-cs="datatable"] td {
+      text-align: left;
+      padding: 0.75rem;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    [data-cs="datatable"] th {
+      background: #f8f9fa;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    [data-cs="datatable"] th:hover {
+      background: #e9ecef;
+    }
+    
+    [data-cs="datatable"] th.sorted-asc::after {
+      content: ' ▲';
+    }
+    
+    [data-cs="datatable"] th.sorted-desc::after {
+      content: ' ▼';
+    }
+    
+    [data-cs="datatable"] .pagination {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      justify-content: center;
+    }
+    
+    [data-cs="datatable"] .pagination button {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      border-radius: 0.25rem;
+    }
+    
+    [data-cs="datatable"] .pagination button:hover {
+      background: #f8f9fa;
+    }
+    
+    [data-cs="datatable"] .pagination button.active {
+      background: #0066cc;
+      color: white;
+      border-color: #0066cc;
+    }
+    
+    [data-cs="datatable"] .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    [data-cs="datatable"] .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+    
+    [data-cs="datatable"] .empty {
+      text-align: center;
+      padding: 2rem;
+      color: #999;
+    }
+  </style>
+  
+  <div class="controls">
+    <input type="search" class="search" placeholder="Buscar...">
+    <div class="info"></div>
+  </div>
+  
+  <div class="table-container">
+    <div class="loading">Cargando...</div>
+  </div>
+  
+  <div class="pagination"></div>
+  
+  <script>
+  CS.datatable = {
+    async init() {
+      // Cargar módulos necesarios
+      if (!CS.reactive) await CS.load('reactive');
+      if (!CS.vdom) await CS.load('vdom');
+      
+      // Estado
+      this.data = CS.reactive.state([]);
+      this.filteredData = CS.reactive.state([]);
+      this.currentPage = CS.reactive.state(1);
+      this.sortField = CS.reactive.state(null);
+      this.sortOrder = CS.reactive.state('asc');
+      this.searchTerm = CS.reactive.state('');
+      this.loading = CS.reactive.state(true);
+      
+      // Config
+      this.pageSize = this.config.pagesize || 10;
+      
+      // Referencias
+      this.container = this.$('.table-container');
+      this.searchInput = this.$('.search');
+      this.pagination = this.$('.pagination');
+      this.info = this.$('.info');
+      
+      // Bind search
+      this.searchInput.oninput = (e) => {
+        this.searchTerm.set(e.target.value);
+        this.currentPage.set(1);
+      };
+      
+      // Computed: filtered data
+      this.filteredData = CS.reactive.computed(() => {
+        const term = this.searchTerm().toLowerCase();
+        const data = this.data();
+        
+        if (!term) return data;
+        
+        return data.filter(row => 
+          Object.values(row).some(val => 
+            String(val).toLowerCase().includes(term)
+          )
+        );
+      }, [this.searchTerm, this.data]);
+      
+      // Computed: sorted data
+      this.sortedData = CS.reactive.computed(() => {
+        const data = [...this.filteredData()];
+        const field = this.sortField();
+        const order = this.sortOrder();
+        
+        if (!field) return data;
+        
+        return data.sort((a, b) => {
+          const aVal = a[field];
+          const bVal = b[field];
+          const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+          return order === 'asc' ? cmp : -cmp;
+        });
+      }, [this.filteredData, this.sortField, this.sortOrder]);
+      
+      // Computed: paginated data
+      this.paginatedData = CS.reactive.computed(() => {
+        const data = this.sortedData();
+        const page = this.currentPage();
+        const start = (page - 1) * this.pageSize;
+        return data.slice(start, start + this.pageSize);
+      }, [this.sortedData, this.currentPage]);
+      
+      // Computed: total pages
+      this.totalPages = CS.reactive.computed(() => {
+        return Math.ceil(this.filteredData().length / this.pageSize);
+      }, [this.filteredData]);
+      
+      // Effects
+      CS.reactive.effect(() => {
+        this.renderTable();
+        this.renderPagination();
+        this.updateInfo();
+      }, [this.paginatedData, this.currentPage, this.totalPages]);
+      
+      // Load data
+      await this.loadData();
+    },
+    
+    async loadData() {
+      this.loading.set(true);
+      
+      try {
+        const response = await fetch(this.config.source);
+        const data = await response.json();
+        this.data.set(data);
+        this.detectColumns(data);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        this.container.innerHTML = '<div class="error">Error al cargar datos</div>';
+      } finally {
+        this.loading.set(false);
+      }
+    },
+    
+    detectColumns(data) {
+      if (!data.length) return;
+      
+      this.columns = Object.keys(data[0]).map(key => ({
+        key,
+        label: key.charAt(0).toUpperCase() + key.slice(1)
+      }));
+    },
+    
+    renderTable() {
+      const data = this.paginatedData();
+      
+      if (this.loading()) {
+        return;
+      }
+      
+      if (!data.length) {
+        this.container.innerHTML = '<div class="empty">No hay datos</div>';
+        return;
+      }
+      
+      const { h, render } = CS.vdom;
+      
+      const table = h('table', {}, [
+        h('thead', {}, 
+          h('tr', {}, 
+            this.columns.map(col => 
+              h('th', {
+                className: this.sortField() === col.key ? `sorted-${this.sortOrder()}` : '',
+                onclick: () => this.sort(col.key)
+              }, col.label)
+            )
+          )
+        ),
+        h('tbody', {},
+          data.map(row => 
+            h('tr', {}, 
+              this.columns.map(col => 
+                h('td', {}, row[col.key])
+              )
+            )
+          )
+        )
+      ]);
+      
+      render(table, this.container);
+    },
+    
+    renderPagination() {
+      const { h, render } = CS.vdom;
+      const currentPage = this.currentPage();
+      const totalPages = this.totalPages();
+      
+      if (totalPages <= 1) {
+        this.pagination.innerHTML = '';
+        return;
+      }
+      
+      const buttons = [];
+      
+      // Previous
+      buttons.push(
+        h('button', {
+          disabled: currentPage === 1,
+          onclick: () => this.currentPage.set(currentPage - 1)
+        }, 'Anterior')
+      );
+      
+      // Page numbers
+      for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+        buttons.push(
+          h('button', {
+            className: i === currentPage ? 'active' : '',
+            onclick: () => this.currentPage.set(i)
+          }, i)
+        );
+      }
+      
+      // Next
+      buttons.push(
+        h('button', {
+          disabled: currentPage === totalPages,
+          onclick: () => this.currentPage.set(currentPage + 1)
+        }, 'Siguiente')
+      );
+      
+      render(h('div', { className: 'pagination' }, buttons), this.pagination.parentElement);
+    },
+    
+    updateInfo() {
+      const total = this.filteredData().length;
+      const page = this.currentPage();
+      const start = (page - 1) * this.pageSize + 1;
+      const end = Math.min(page * this.pageSize, total);
+      
+      this.info.textContent = total ? `Mostrando ${start}-${end} de ${total}` : '';
+    },
+    
+    sort(field) {
+      if (this.sortField() === field) {
+        this.sortOrder.set(this.sortOrder() === 'asc' ? 'desc' : 'asc');
+      } else {
+        this.sortField.set(field);
+        this.sortOrder.set('asc');
+      }
+    }
+  };
+  </script>
+</div>

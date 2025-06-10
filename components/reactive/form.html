@@ -1,0 +1,210 @@
+<!-- Form Reactivo - Necesita CS.reactive (+5kb) -->
+<div data-cs="contact-form" data-endpoint="/api/contact">
+  <style>
+    [data-cs="contact-form"] {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    [data-cs="contact-form"] .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    [data-cs="contact-form"] label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+    }
+    
+    [data-cs="contact-form"] input,
+    [data-cs="contact-form"] textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 0.25rem;
+      font-size: 1rem;
+    }
+    
+    [data-cs="contact-form"] input:focus,
+    [data-cs="contact-form"] textarea:focus {
+      outline: none;
+      border-color: #0066cc;
+    }
+    
+    [data-cs="contact-form"] .error {
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    
+    [data-cs="contact-form"] button {
+      background: #0066cc;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.25rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    
+    [data-cs="contact-form"] button:hover {
+      background: #0052a3;
+    }
+    
+    [data-cs="contact-form"] button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    [data-cs="contact-form"] .success {
+      background: #d4edda;
+      color: #155724;
+      padding: 1rem;
+      border-radius: 0.25rem;
+      margin-top: 1rem;
+    }
+  </style>
+  
+  <form>
+    <div class="form-group">
+      <label for="name">Nombre</label>
+      <input type="text" id="name" name="name" required>
+      <div class="error" data-error="name"></div>
+    </div>
+    
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+      <div class="error" data-error="email"></div>
+    </div>
+    
+    <div class="form-group">
+      <label for="message">Mensaje</label>
+      <textarea id="message" name="message" rows="4" required></textarea>
+      <div class="error" data-error="message"></div>
+    </div>
+    
+    <button type="submit">Enviar</button>
+    
+    <div class="success" style="display: none;"></div>
+  </form>
+  
+  <script>
+  CS['contact-form'] = {
+    async init() {
+      // Cargar módulo reactivo si no está
+      if (!CS.reactive) {
+        await CS.load('reactive');
+      }
+      
+      // Estado reactivo
+      this.errors = CS.reactive.state({});
+      this.submitting = CS.reactive.state(false);
+      this.success = CS.reactive.state(false);
+      
+      // Referencias
+      this.form = this.$('form');
+      this.submitBtn = this.$('button[type="submit"]');
+      this.successMsg = this.$('.success');
+      
+      // Bind errores a DOM
+      CS.reactive.effect(() => {
+        const errors = this.errors();
+        this.$$('[data-error]').forEach(el => {
+          const field = el.dataset.error;
+          el.textContent = errors[field] || '';
+        });
+      });
+      
+      // Bind estado submit
+      CS.reactive.effect(() => {
+        this.submitBtn.disabled = this.submitting();
+        this.submitBtn.textContent = this.submitting() ? 'Enviando...' : 'Enviar';
+      });
+      
+      // Bind success
+      CS.reactive.effect(() => {
+        if (this.success()) {
+          this.successMsg.style.display = 'block';
+          this.successMsg.textContent = 'Mensaje enviado con éxito!';
+          this.form.reset();
+          setTimeout(() => this.success.set(false), 5000);
+        } else {
+          this.successMsg.style.display = 'none';
+        }
+      });
+      
+      // Form submit
+      this.form.onsubmit = (e) => {
+        e.preventDefault();
+        this.handleSubmit();
+      };
+      
+      // Validación en tiempo real
+      this.form.oninput = (e) => {
+        if (e.target.name) {
+          this.validateField(e.target);
+        }
+      };
+    },
+    
+    validateField(field) {
+      const errors = { ...this.errors() };
+      
+      if (!field.value.trim()) {
+        errors[field.name] = 'Este campo es requerido';
+      } else if (field.type === 'email' && !field.value.includes('@')) {
+        errors[field.name] = 'Email inválido';
+      } else {
+        delete errors[field.name];
+      }
+      
+      this.errors.set(errors);
+    },
+    
+    validate() {
+      const data = new FormData(this.form);
+      const errors = {};
+      
+      for (let [key, value] of data.entries()) {
+        if (!value.trim()) {
+          errors[key] = 'Este campo es requerido';
+        }
+      }
+      
+      if (data.get('email') && !data.get('email').includes('@')) {
+        errors.email = 'Email inválido';
+      }
+      
+      this.errors.set(errors);
+      return Object.keys(errors).length === 0;
+    },
+    
+    async handleSubmit() {
+      if (!this.validate()) return;
+      
+      this.submitting.set(true);
+      
+      try {
+        const data = new FormData(this.form);
+        const response = await fetch(this.config.endpoint, {
+          method: 'POST',
+          body: data
+        });
+        
+        if (!response.ok) throw new Error('Error al enviar');
+        
+        this.success.set(true);
+        this.errors.set({});
+        this.emit('submitted', Object.fromEntries(data));
+        
+      } catch (error) {
+        this.errors.set({ form: 'Error al enviar. Intenta de nuevo.' });
+        this.emit('error', error);
+      } finally {
+        this.submitting.set(false);
+      }
+    }
+  };
+  </script>
+</div>

@@ -1,0 +1,35 @@
+{
+  "name": "run-rebel",
+  "version": "1.0.0",
+  "description": "Component Intelligence System - Mínimo Máximo para Webflow",
+  "main": ".cs/core.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"No tests yet\"",
+    "serve": "python -m http.server 8080"
+  },
+  "keywords": [
+    "webflow",
+    "components",
+    "vanilla-js",
+    "no-dependencies",
+    "transform"
+  ],
+  "author": "RUN:REBEL Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zaste/run-rebel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zaste/run-rebel/issues"
+  },
+  "homepage": "https://github.com/zaste/run-rebel#readme",
+  "files": [
+    ".cs/",
+    "components/",
+    "docs/",
+    "LICENSE",
+    "README.md"
+  ]
+}

@@ -1,71 +1,75 @@
 {
-  "version": "1.0.0",
-  "patterns": {
-    "components": {
-      "modal": {
-        "category": "simple",
-        "common_features": ["closeable", "escape-key", "overlay-click"],
-        "data_attributes": ["data-closeable", "data-title"],
-        "events": ["modal:open", "modal:close"]
-      },
-      "form": {
-        "category": "reactive",
-        "common_features": ["validation", "error-display", "submit-handler"],
-        "requires": ["CS.reactive"],
-        "events": ["form:submit", "form:error", "form:success"]
-      },
-      "datatable": {
-        "category": "complex",
-        "common_features": ["sorting", "filtering", "pagination"],
-        "requires": ["CS.vdom", "CS.reactive"],
-        "events": ["table:sort", "table:filter", "table:page"]
-      }
-    },
-    "transforms": {
-      "useState": {
-        "from": "const [state, setState] = useState(initial)",
-        "to": "const state = CS.reactive.state(initial)",
-        "usage": "state() para leer, state.set(value) para escribir"
-      },
-      "useEffect": {
-        "from": "useEffect(() => {}, [deps])",
-        "to": "CS.reactive.effect(() => {}, [deps])",
-        "note": "Corre inmediatamente y cuando cambian deps"
-      },
-      "jquery_selector": {
-        "from": "$(selector)",
-        "to": "this.$(selector) o document.querySelector(selector)"
-      },
-      "jquery_events": {
-        "from": ".on('click', handler)",
-        "to": ".addEventListener('click', handler)"
-      }
-    },
-    "conventions": {
-      "naming": {
-        "components": "kebab-case",
-        "events": "component:action",
-        "data_attributes": "data-kebab-case"
-      },
-      "structure": {
-        "wrapper": "<div data-cs='name'>",
-        "styles": "<style> scoped to [data-cs='name']",
-        "script": "CS['name'] = { init() {...} }"
-      }
+  "version": "2.0.0",
+  "taxonomy": {
+    "levels": [
+      "tokens",
+      "elements",
+      "components",
+      "layouts",
+      "templates"
+    ],
+    "deprecated": {
+      "patterns": "Migrated to component features",
+      "modules": "Merged into components/complex",
+      "sections": "Merged into components/sections"
     }
   },
-  "auto_detect": {
-    "simple": {
-      "indicators": ["no state", "click handlers only", "toggle classes"],
-      "max_complexity": 3
-    },
-    "reactive": {
-      "indicators": ["useState", "form inputs", "data binding"],
-      "max_complexity": 7
-    },
-    "complex": {
-      "indicators": ["map", "filter", "dynamic lists", "tables"],
-      "min_complexity": 8
+  "detection": {
+    "rules": [
+      {
+        "if": "matches CSS custom property",
+        "pattern": "^--[\\w-]+:\\s*[^;]+;",
+        "then": "token"
+      },
+      {
+        "if": "has data-element attribute",
+        "pattern": "data-element=",
+        "then": "element"
+      },
+      {
+        "if": "has data-component or contains state/event handlers",
+        "pattern": "data-component=|addEventListener|onclick|state",
+        "then": "component"
+      },
+      {
+        "if": "has data-layout or defines grid/flex structure",
+        "pattern": "data-layout=|display:\\s*(grid|flex)",
+        "then": "layout"
+      },
+      {
+        "if": "has data-template or composes multiple sections",
+        "pattern": "data-template=|<header>.*<main>.*<footer>",
+        "then": "template"
+      }
+    ]
+  },
+  "transform": {
+    "steps": [
+      "parse",
+      "classify",
+      "extract",
+      "optimize",
+      "compose"
+    ],
+    "mappings": {
+      "react-component": "component",
+      "vue-component": "component",
+      "jquery-plugin": "component",
+      "css-framework": "tokens+elements",
+      "page-section": "component/section"
     }
+  },
+  "features": {
+    "description": "Optional component behaviors",
+    "available": [
+      "draggable",
+      "sortable",
+      "collapsible",
+      "dismissible",
+      "lazy",
+      "animated",
+      "responsive"
+    ],
+    "usage": "data-{feature}=\"true\""
   }
 }

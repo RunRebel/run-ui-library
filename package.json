@@ -1,19 +1,26 @@
 {
   "name": "run-rebel",
-  "version": "1.0.0",
-  "description": "Component Intelligence System - Mínimo Máximo para Webflow",
-  "main": ".cs/core.js",
+  "version": "2.0.0",
+  "description": "Component Intelligence System - 5-Level Taxonomy for Webflow",
+  "main": "cs/core.js",
   "type": "module",
   "scripts": {
     "test": "echo \"No tests yet\"",
-    "serve": "python -m http.server 8080"
+    "serve": "python -m http.server 8080",
+    "migrate": "node scripts/migrate-v2.js",
+    "validate": "node scripts/validate-taxonomy.js",
+    "component:new": "node scripts/create-component.js",
+    "build:docs": "node scripts/build-docs.js"
   },
   "keywords": [
     "webflow",
     "components",
     "vanilla-js",
     "no-dependencies",
-    "transform"
+    "transform",
+    "5-level-taxonomy",
+    "atomic-design-inspired",
+    "component-system"
   ],
   "author": "RUN:REBEL Team",
   "license": "MIT",
@@ -26,10 +33,17 @@
   },
   "homepage": "https://github.com/zaste/run-rebel#readme",
   "files": [
-    ".cs/",
-    "components/",
+    "cs/",
+    "00-tokens/",
+    "01-elements/",
+    "02-components/",
+    "03-layouts/",
+    "04-templates/",
+    "claude/",
+    "scripts/",
     "docs/",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ]
 }

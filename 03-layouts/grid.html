@@ -1,0 +1,60 @@
+<div data-layout="grid"
+     data-columns="3"
+     data-gap="medium"
+     data-responsive="true">
+  <style>
+    [data-layout="grid"] {
+      display: grid;
+      grid-template-columns: repeat(var(--columns, 3), 1fr);
+      gap: var(--gap-medium, var(--space-lg));
+    }
+    
+    /* Responsive behavior */
+    [data-layout="grid"][data-responsive="true"] {
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+      
+      @media (min-width: 769px) and (max-width: 1024px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    /* Gap variants */
+    [data-layout="grid"][data-gap="small"] {
+      gap: var(--space-sm);
+    }
+    
+    [data-layout="grid"][data-gap="large"] {
+      gap: var(--space-xl);
+    }
+    
+    /* Column variants */
+    [data-layout="grid"][data-columns="2"] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    [data-layout="grid"][data-columns="4"] {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    
+    [data-layout="grid"][data-columns="5"] {
+      grid-template-columns: repeat(5, 1fr);
+    }
+    
+    [data-layout="grid"][data-columns="6"] {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  </style>
+  
+  <slot><!-- Grid items go here --></slot>
+</div>
+
+<!-- 
+Usage:
+<div data-layout="grid" data-columns="3" data-gap="large">
+  <div data-component="card">...</div>
+  <div data-component="card">...</div>
+  <div data-component="card">...</div>
+</div>
+-->

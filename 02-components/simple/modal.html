@@ -1,0 +1,158 @@
+<div data-component="modal" 
+     data-open="false"
+     data-close-on-backdrop="true"
+     data-close-on-escape="true">
+  <style>
+    [data-component="modal"] {
+      position: fixed;
+      inset: 0;
+      z-index: var(--z-modal, 1000);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-lg);
+    }
+    
+    [data-component="modal"][data-open="true"] {
+      display: flex;
+    }
+    
+    .modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      animation: fadeIn var(--duration-base) var(--easing-default);
+    }
+    
+    .modal__content {
+      position: relative;
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow: auto;
+      box-shadow: var(--shadow-xl);
+      animation: modalIn var(--duration-base) var(--easing-bounce);
+    }
+    
+    .modal__close {
+      position: absolute;
+      top: var(--space-md);
+      right: var(--space-md);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-radius: var(--radius-base);
+      transition: all var(--duration-fast);
+    }
+    
+    .modal__close:hover {
+      background: var(--color-gray-100);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+  </style>
+  
+  <div class="modal__backdrop"></div>
+  <div class="modal__content" role="dialog" aria-modal="true">
+    <button class="modal__close" aria-label="Close modal">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <slot>Modal content goes here</slot>
+  </div>
+  
+  <script>
+  CS.component('modal', {
+    init() {
+      this.backdrop = this.$('.modal__backdrop');
+      this.content = this.$('.modal__content');
+      this.closeBtn = this.$('.modal__close');
+      
+      // Close button
+      this.closeBtn.onclick = () => this.close();
+      
+      // Backdrop click
+      if (this.config.closeOnBackdrop) {
+        this.backdrop.onclick = () => this.close();
+      }
+      
+      // Escape key
+      if (this.config.closeOnEscape) {
+        this.handleEscape = (e) => {
+          if (e.key === 'Escape' && this.isOpen()) {
+            this.close();
+          }
+        };
+      }
+      
+      // Stop propagation on content
+      this.content.onclick = (e) => e.stopPropagation();
+    },
+    
+    open() {
+      this.el.dataset.open = 'true';
+      document.body.style.overflow = 'hidden';
+      
+      if (this.handleEscape) {
+        document.addEventListener('keydown', this.handleEscape);
+      }
+      
+      this.emit('open');
+      
+      // Focus management
+      requestAnimationFrame(() => {
+        this.closeBtn.focus();
+      });
+    },
+    
+    close() {
+      this.el.dataset.open = 'false';
+      document.body.style.overflow = '';
+      
+      if (this.handleEscape) {
+        document.removeEventListener('keydown', this.handleEscape);
+      }
+      
+      this.emit('close');
+    },
+    
+    isOpen() {
+      return this.el.dataset.open === 'true';
+    },
+    
+    toggle() {
+      this.isOpen() ? this.close() : this.open();
+    },
+    
+    destroy() {
+      this.close();
+      if (this.handleEscape) {
+        document.removeEventListener('keydown', this.handleEscape);
+      }
+    }
+  });
+  </script>
+</div>

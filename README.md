@@ -7,46 +7,99 @@ Sistema híbrido inteligente que transforma cualquier código en componentes opt
 ### 🎯 Características
 
 - **Sin dependencias**: Todo es vanilla JS
-- **Carga adaptativa**: Solo carga lo que necesita (2kb - 15kb)
+- **Carga adaptativa**: Solo carga lo que necesita (2kb - 15kb)  
 - **Transform inteligente**: React/Vue/jQuery → Componentes limpios
 - **Claude MCP Ready**: Generación inteligente con IA
+- **Taxonomía clara**: 5 niveles bien definidos
 
-### 📁 Estructura
+### 📊 Nueva Estructura v2.0
 
 ```
-components/          # Tus componentes listos
-├── simple/         # Sin estado (0kb extra)
-├── reactive/       # Con estado (5kb extra)
-└── complex/        # Con virtual DOM (13kb extra)
+00-tokens/           # Variables de diseño
+├── base.css        # Tokens del sistema
 
-.cs/                # Sistema core
-├── core.js         # Base siempre presente (2kb)
-├── reactive.js     # Módulo reactivo (5kb)
+01-elements/         # HTML mejorado (sin JS)
+├── button.html     
+├── input.html      
+└── card.html       
+
+02-components/       # Unidades funcionales
+├── simple/         # Un solo propósito
+├── complex/        # Multi-componentes  
+└── sections/       # Secciones de página
+
+03-layouts/          # Estructuras espaciales
+├── container.html  
+├── grid.html       
+└── sidebar.html    
+
+04-templates/        # Páginas completas
+├── landing.html    
+└── dashboard.html  
+
+.cs/                 # Sistema core
+├── core.js         # Base (2kb) - v2.0
+├── reactive.js     # Estado reactivo (5kb)
 └── vdom.js         # Virtual DOM (8kb)
 
-.claude/            # Configuración IA
-├── instructions.md # Instrucciones para Claude
-├── patterns.json   # Patrones aprendidos
-└── examples/       # Ejemplos de referencia
+.claude/             # Configuración IA
+├── instructions.md # Guía completa v2.0
+└── patterns.json   # Reglas de detección
 ```
 
 ### 🚀 Quick Start
 
 1. **En Webflow:**
 ```html
-<script src="https://cdn.jsdelivr.net/gh/zaste/run-rebel/.cs/core.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zaste/run-rebel@v2/.cs/core.js"></script>
 ```
 
-2. **Usar con Claude:**
-```
-Genera un modal con el sistema run-rebel
+2. **Usar un componente:**
+```html
+<div data-component="modal">
+  <button data-trigger>Abrir</button>
+  <div data-content>
+    <h2>Mi Modal</h2>
+    <p>Contenido aquí</p>
+  </div>
+</div>
 ```
 
 3. **Copiar y pegar en Webflow Embed**
 
-### 📖 Documentación
+### 📐 Reglas de Decisión
 
-Ver [.claude/instructions.md](.claude/instructions.md) para guía completa.
+| Si es... | Usar... | Ejemplo |
+|----------|---------|---------|
+| Solo valores | Token | `--color-primary` |
+| HTML sin lógica | Element | `<button data-element="button">` |
+| Tiene estado/eventos | Component | `<div data-component="dropdown">` |
+| Define espacio | Layout | `<div data-layout="grid">` |
+| Página completa | Template | `<div data-template="landing">` |
+
+### 🔄 Migración de v1 a v2
+
+```bash
+# Automático
+[data-pattern="x"] → [data-x="true"]
+[data-module] → [data-component]  
+[data-section] → [data-component]
+```
+
+### 📚 Documentación
+
+- [Guía completa](.claude/instructions.md)
+- [Ejemplos](docs/quick-start.md)
+- [Patrones](.claude/patterns.json)
+
+### 🌟 v2.0 Changelog
+
+- ✅ Simplificado de 7 a 5 niveles
+- ✅ Patterns → Features opcionales
+- ✅ Modules/Sections → Components
+- ✅ Nuevo nivel Layouts
+- ✅ Mejor detección automática
+- ✅ Retrocompatible con v1
 
 ### 📄 Licencia
 

@@ -1,0 +1,124 @@
+<div data-component="counter" 
+     data-initial="0"
+     data-min="-999"
+     data-max="999">
+  <style>
+    [data-component="counter"] {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      border: 1px solid var(--color-gray-300);
+      border-radius: var(--radius-lg);
+      background: white;
+      user-select: none;
+    }
+    
+    .counter__value {
+      font-size: var(--font-size-xxl);
+      font-weight: var(--font-weight-bold);
+      min-width: 4ch;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .counter__button {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: var(--color-gray-100);
+      color: var(--color-gray-700);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      font-size: var(--font-size-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--duration-fast);
+    }
+    
+    .counter__button:hover:not(:disabled) {
+      background: var(--color-primary);
+      color: white;
+      transform: scale(1.1);
+    }
+    
+    .counter__button:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+    
+    .counter__button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+  
+  <button class="counter__button counter__dec" aria-label="Decrease">−</button>
+  <span class="counter__value" role="status" aria-live="polite">0</span>
+  <button class="counter__button counter__inc" aria-label="Increase">+</button>
+  
+  <script>
+  CS.component('counter', {
+    init() {
+      this.value = parseInt(this.config.initial) || 0;
+      this.min = parseInt(this.config.min) || -Infinity;
+      this.max = parseInt(this.config.max) || Infinity;
+      
+      this.valueEl = this.$('.counter__value');
+      this.decBtn = this.$('.counter__dec');
+      this.incBtn = this.$('.counter__inc');
+      
+      this.decBtn.onclick = () => this.decrease();
+      this.incBtn.onclick = () => this.increase();
+      
+      // Keyboard support
+      this.el.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          this.increase();
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          this.decrease();
+        }
+      });
+      
+      this.update();
+    },
+    
+    increase() {
+      if (this.value < this.max) {
+        this.value++;
+        this.update();
+        this.emit('change', { value: this.value });
+      }
+    },
+    
+    decrease() {
+      if (this.value > this.min) {
+        this.value--;
+        this.update();
+        this.emit('change', { value: this.value });
+      }
+    },
+    
+    setValue(value) {
+      value = parseInt(value);
+      if (!isNaN(value)) {
+        this.value = Math.max(this.min, Math.min(this.max, value));
+        this.update();
+        this.emit('change', { value: this.value });
+      }
+    },
+    
+    update() {
+      this.valueEl.textContent = this.value;
+      this.decBtn.disabled = this.value <= this.min;
+      this.incBtn.disabled = this.value >= this.max;
+    },
+    
+    getValue() {
+      return this.value;
+    }
+  });
+  </script>
+</div>

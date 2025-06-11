@@ -1,0 +1,89 @@
+<div data-template="landing">
+  <style>
+    [data-template="landing"] {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .landing__header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: white;
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+    
+    .landing__main {
+      flex: 1;
+    }
+    
+    .landing__footer {
+      background: var(--color-gray-100);
+      padding: var(--space-xl) 0;
+    }
+  </style>
+  
+  <header class="landing__header">
+    <div data-layout="container">
+      <slot name="header">Header content</slot>
+    </div>
+  </header>
+  
+  <main class="landing__main">
+    <slot name="main">Main content</slot>
+  </main>
+  
+  <footer class="landing__footer">
+    <div data-layout="container">
+      <slot name="footer">Footer content</slot>
+    </div>
+  </footer>
+  
+  <script>
+  CS.template('landing', {
+    init() {
+      // Template orchestration
+      this.header = this.$('.landing__header');
+      this.main = this.$('.landing__main');
+      this.footer = this.$('.landing__footer');
+      
+      // Initialize smooth scroll
+      this.initSmoothScroll();
+      
+      // Track scroll position
+      this.trackScroll();
+    },
+    
+    initSmoothScroll() {
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+          const target = document.querySelector(anchor.getAttribute('href'));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+    },
+    
+    trackScroll() {
+      let scrolled = false;
+      
+      const handleScroll = () => {
+        const isScrolled = window.scrollY > 10;
+        if (isScrolled !== scrolled) {
+          scrolled = isScrolled;
+          this.header.classList.toggle('scrolled', scrolled);
+          this.emit('scroll:change', { scrolled });
+        }
+      };
+      
+      window.addEventListener('scroll', handleScroll, { passive: true });
+    }
+  });
+  </script>
+</div>

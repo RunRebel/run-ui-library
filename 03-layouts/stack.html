@@ -1,0 +1,82 @@
+<div data-layout="stack"
+     data-gap="medium"
+     data-align="stretch"
+     data-dividers="false">
+  <style>
+    [data-layout="stack"] {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-medium, var(--space-lg));
+    }
+    
+    /* Gap variants */
+    [data-layout="stack"][data-gap="none"] {
+      gap: 0;
+    }
+    
+    [data-layout="stack"][data-gap="small"] {
+      gap: var(--space-sm);
+    }
+    
+    [data-layout="stack"][data-gap="large"] {
+      gap: var(--space-xl);
+    }
+    
+    [data-layout="stack"][data-gap="xlarge"] {
+      gap: var(--space-xxl);
+    }
+    
+    /* Alignment variants */
+    [data-layout="stack"][data-align="start"] {
+      align-items: flex-start;
+    }
+    
+    [data-layout="stack"][data-align="center"] {
+      align-items: center;
+    }
+    
+    [data-layout="stack"][data-align="end"] {
+      align-items: flex-end;
+    }
+    
+    [data-layout="stack"][data-align="stretch"] {
+      align-items: stretch;
+    }
+    
+    /* Dividers between items */
+    [data-layout="stack"][data-dividers="true"] > *:not(:last-child) {
+      padding-bottom: var(--gap-medium, var(--space-lg));
+      border-bottom: 1px solid var(--color-gray-200, #e5e5e5);
+      margin-bottom: 0;
+    }
+    
+    /* Special handling for dividers with no gap */
+    [data-layout="stack"][data-dividers="true"][data-gap="none"] > *:not(:last-child) {
+      padding-bottom: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+    
+    /* Recursive stacking */
+    [data-layout="stack"] [data-layout="stack"] {
+      /* Nested stacks inherit alignment unless overridden */
+    }
+  </style>
+  
+  <slot><!-- Stacked items go here --></slot>
+</div>
+
+<!-- 
+Usage:
+<div data-layout="stack" data-gap="large" data-align="center">
+  <h2>Title</h2>
+  <p>Description</p>
+  <button>Action</button>
+</div>
+
+With dividers:
+<div data-layout="stack" data-gap="medium" data-dividers="true">
+  <article>Article 1</article>
+  <article>Article 2</article>
+  <article>Article 3</article>
+</div>
+-->

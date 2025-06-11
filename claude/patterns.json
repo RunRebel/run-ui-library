@@ -1,0 +1,124 @@
+{
+  "version": "2.0.0",
+  "taxonomy": {
+    "levels": [
+      "tokens",
+      "elements",
+      "components",
+      "layouts",
+      "templates"
+    ],
+    "hierarchy": {
+      "tokens": {
+        "description": "Design system variables",
+        "examples": ["colors", "spacing", "typography"],
+        "logic": false
+      },
+      "elements": {
+        "description": "Enhanced HTML without JavaScript",
+        "examples": ["button", "input", "heading"],
+        "logic": false
+      },
+      "components": {
+        "description": "Self-contained units with state and behavior",
+        "subcategories": {
+          "simple": "Single responsibility",
+          "complex": "Multiple coordinated parts",
+          "sections": "Page sections"
+        },
+        "logic": true
+      },
+      "layouts": {
+        "description": "Spatial organization structures",
+        "examples": ["grid", "sidebar", "stack"],
+        "logic": false
+      },
+      "templates": {
+        "description": "Complete page compositions",
+        "examples": ["landing", "dashboard", "product"],
+        "logic": true
+      }
+    }
+  },
+  "detection": {
+    "rules": [
+      {
+        "if": "element.style || element.textContent.includes('--')",
+        "then": "token",
+        "confidence": 0.7
+      },
+      {
+        "if": "element.dataset.element !== undefined",
+        "then": "element",
+        "confidence": 1.0
+      },
+      {
+        "if": "element.dataset.component !== undefined",
+        "then": "component",
+        "confidence": 1.0
+      },
+      {
+        "if": "element.dataset.layout !== undefined",
+        "then": "layout",
+        "confidence": 1.0
+      },
+      {
+        "if": "element.dataset.template !== undefined",
+        "then": "template",
+        "confidence": 1.0
+      },
+      {
+        "if": "hasJavaScript && hasState",
+        "then": "component",
+        "confidence": 0.9
+      },
+      {
+        "if": "hasGridOrFlexbox && !hasBusinessLogic",
+        "then": "layout",
+        "confidence": 0.8
+      }
+    ]
+  },
+  "migration": {
+    "from": "1.0.0",
+    "to": "2.0.0",
+    "transforms": [
+      {
+        "from": "data-pattern=\"{name}\"",
+        "to": "data-{name}=\"true\"",
+        "description": "Patterns become optional features"
+      },
+      {
+        "from": "data-module",
+        "to": "data-component",
+        "description": "Modules merged into components"
+      },
+      {
+        "from": "data-section",
+        "to": "data-component",
+        "description": "Sections merged into components"
+      },
+      {
+        "from": "CS.module(",
+        "to": "CS.component(",
+        "description": "API alignment"
+      }
+    ]
+  },
+  "features": {
+    "description": "Optional component capabilities (formerly patterns)",
+    "available": [
+      "draggable",
+      "resizable",
+      "collapsible",
+      "sortable",
+      "filterable",
+      "selectable",
+      "editable",
+      "dismissible",
+      "expandable",
+      "focusable"
+    ],
+    "usage": "data-{feature}=\"true\" or data-{feature}=\"config\""
+  }
+}

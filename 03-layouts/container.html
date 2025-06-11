@@ -1,0 +1,44 @@
+<div data-layout="container"
+     data-width="default"
+     data-padding="true">
+  <style>
+    [data-layout="container"] {
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Width variants */
+    [data-layout="container"][data-width="default"] {
+      max-width: 1200px;
+    }
+    
+    [data-layout="container"][data-width="narrow"] {
+      max-width: 768px;
+    }
+    
+    [data-layout="container"][data-width="wide"] {
+      max-width: 1400px;
+    }
+    
+    [data-layout="container"][data-width="full"] {
+      max-width: 100%;
+    }
+    
+    /* Padding */
+    [data-layout="container"][data-padding="true"] {
+      padding-left: var(--space-lg);
+      padding-right: var(--space-lg);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      [data-layout="container"][data-padding="true"] {
+        padding-left: var(--space-md);
+        padding-right: var(--space-md);
+      }
+    }
+  </style>
+  
+  <slot><!-- Content goes here --></slot>
+</div>

@@ -1,0 +1,86 @@
+<div data-layout="grid"
+     data-columns="3"
+     data-gap="medium"
+     data-align="stretch">
+  <style>
+    [data-layout="grid"] {
+      display: grid;
+      width: 100%;
+    }
+    
+    /* Column variants */
+    [data-layout="grid"][data-columns="1"] {
+      grid-template-columns: 1fr;
+    }
+    
+    [data-layout="grid"][data-columns="2"] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    [data-layout="grid"][data-columns="3"] {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    [data-layout="grid"][data-columns="4"] {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    
+    [data-layout="grid"][data-columns="auto"] {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    
+    /* Gap variants */
+    [data-layout="grid"][data-gap="none"] {
+      gap: 0;
+    }
+    
+    [data-layout="grid"][data-gap="small"] {
+      gap: var(--space-sm);
+    }
+    
+    [data-layout="grid"][data-gap="medium"] {
+      gap: var(--space-md);
+    }
+    
+    [data-layout="grid"][data-gap="large"] {
+      gap: var(--space-lg);
+    }
+    
+    /* Alignment */
+    [data-layout="grid"][data-align="start"] {
+      align-items: start;
+    }
+    
+    [data-layout="grid"][data-align="center"] {
+      align-items: center;
+    }
+    
+    [data-layout="grid"][data-align="end"] {
+      align-items: end;
+    }
+    
+    [data-layout="grid"][data-align="stretch"] {
+      align-items: stretch;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      [data-layout="grid"][data-columns="3"],
+      [data-layout="grid"][data-columns="4"] {
+        grid-template-columns: 1fr;
+      }
+      
+      [data-layout="grid"][data-columns="2"] {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (min-width: 769px) and (max-width: 1024px) {
+      [data-layout="grid"][data-columns="4"] {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+  
+  <slot><!-- Grid items go here --></slot>
+</div>

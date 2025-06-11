@@ -1,0 +1,84 @@
+<div data-layout="sidebar"
+     data-side="left"
+     data-width="300px"
+     data-gap="medium">
+  <style>
+    [data-layout="sidebar"] {
+      display: grid;
+      grid-template-columns: var(--sidebar-width, 300px) 1fr;
+      gap: var(--gap-medium, var(--space-lg));
+      min-height: 100%;
+    }
+    
+    /* Side variants */
+    [data-layout="sidebar"][data-side="right"] {
+      grid-template-columns: 1fr var(--sidebar-width, 300px);
+    }
+    
+    /* Width control */
+    [data-layout="sidebar"][data-width] {
+      --sidebar-width: attr(data-width);
+    }
+    
+    /* Gap variants */
+    [data-layout="sidebar"][data-gap="small"] {
+      gap: var(--space-sm);
+    }
+    
+    [data-layout="sidebar"][data-gap="large"] {
+      gap: var(--space-xl);
+    }
+    
+    [data-layout="sidebar"][data-gap="none"] {
+      gap: 0;
+    }
+    
+    /* Sidebar and content areas */
+    .sidebar__aside {
+      position: relative;
+    }
+    
+    .sidebar__main {
+      min-width: 0; /* Prevent content overflow */
+    }
+    
+    /* Sticky sidebar option */
+    [data-layout="sidebar"][data-sticky="true"] .sidebar__aside {
+      position: sticky;
+      top: var(--space-lg);
+      height: fit-content;
+    }
+    
+    /* Responsive behavior */
+    @media (max-width: 768px) {
+      [data-layout="sidebar"] {
+        grid-template-columns: 1fr;
+      }
+      
+      [data-layout="sidebar"][data-side="right"] {
+        grid-template-columns: 1fr;
+      }
+      
+      /* Sidebar appears first on mobile */
+      [data-layout="sidebar"][data-side="right"] .sidebar__aside {
+        order: -1;
+      }
+    }
+  </style>
+  
+  <aside class="sidebar__aside">
+    <slot name="sidebar"><!-- Sidebar content --></slot>
+  </aside>
+  
+  <main class="sidebar__main">
+    <slot name="main"><!-- Main content --></slot>
+  </main>
+</div>
+
+<!-- 
+Usage:
+<div data-layout="sidebar" data-side="left" data-width="250px" data-sticky="true">
+  <div slot="sidebar">Navigation menu</div>
+  <div slot="main">Page content</div>
+</div>
+-->

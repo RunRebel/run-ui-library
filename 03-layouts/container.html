@@ -1,44 +1,76 @@
 <div data-layout="container"
-     data-width="default"
-     data-padding="true">
+     data-width="full"
+     data-padding="medium"
+     data-center="false">
   <style>
     [data-layout="container"] {
       width: 100%;
       margin-left: auto;
       margin-right: auto;
+      padding-left: var(--container-padding, var(--space-lg));
+      padding-right: var(--container-padding, var(--space-lg));
     }
     
     /* Width variants */
-    [data-layout="container"][data-width="default"] {
-      max-width: 1200px;
+    [data-layout="container"][data-width="small"] {
+      max-width: 640px;
     }
     
-    [data-layout="container"][data-width="narrow"] {
+    [data-layout="container"][data-width="medium"] {
       max-width: 768px;
     }
     
-    [data-layout="container"][data-width="wide"] {
-      max-width: 1400px;
+    [data-layout="container"][data-width="large"] {
+      max-width: 1024px;
+    }
+    
+    [data-layout="container"][data-width="xl"] {
+      max-width: 1280px;
     }
     
     [data-layout="container"][data-width="full"] {
       max-width: 100%;
     }
     
-    /* Padding */
-    [data-layout="container"][data-padding="true"] {
-      padding-left: var(--space-lg);
-      padding-right: var(--space-lg);
+    /* Padding variants */
+    [data-layout="container"][data-padding="none"] {
+      padding-left: 0;
+      padding-right: 0;
     }
     
-    /* Responsive */
-    @media (max-width: 768px) {
-      [data-layout="container"][data-padding="true"] {
+    [data-layout="container"][data-padding="small"] {
+      padding-left: var(--space-sm);
+      padding-right: var(--space-sm);
+    }
+    
+    [data-layout="container"][data-padding="large"] {
+      padding-left: var(--space-xl);
+      padding-right: var(--space-xl);
+    }
+    
+    /* Center content */
+    [data-layout="container"][data-center="true"] {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    
+    /* Responsive padding */
+    @media (max-width: 640px) {
+      [data-layout="container"] {
         padding-left: var(--space-md);
         padding-right: var(--space-md);
       }
     }
   </style>
   
-  <slot><!-- Content goes here --></slot>
+  <slot><!-- Container content goes here --></slot>
 </div>
+
+<!-- 
+Usage:
+<div data-layout="container" data-width="large" data-padding="medium">
+  <!-- Your content -->
+</div>
+-->

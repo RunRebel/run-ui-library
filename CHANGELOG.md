@@ -13,7 +13,7 @@
 - Enhanced core.js with full taxonomy support
 - Registry system for all taxonomy levels
 - Automatic detection of element types
-- Claude configuration files (.claude/)
+- Claude configuration files (claude/)
 - Complete examples for all levels
 
 ### Improved

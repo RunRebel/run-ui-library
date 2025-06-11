@@ -212,7 +212,7 @@
       if (this[module]) return;
       
       const config = global.CS_CONFIG || {};
-      const basePath = config.basePath || 'https://cdn.jsdelivr.net/gh/zaste/run-rebel@latest/.cs/';
+      const basePath = config.basePath || 'https://cdn.jsdelivr.net/gh/zaste/run-rebel@2/cs/';
       const url = `${basePath}${module}.js`;
       
       const script = document.createElement('script');

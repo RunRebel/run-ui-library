@@ -1,0 +1,127 @@
+<div data-component="hero"
+     data-variant="centered"
+     data-height="full">
+  <style>
+    [data-component="hero"] {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 50vh;
+      padding: var(--space-xxl) var(--space-lg);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Height variants */
+    [data-component="hero"][data-height="full"] {
+      min-height: 100vh;
+    }
+    
+    [data-component="hero"][data-height="large"] {
+      min-height: 80vh;
+    }
+    
+    [data-component="hero"][data-height="medium"] {
+      min-height: 60vh;
+    }
+    
+    /* Variant styles */
+    [data-component="hero"][data-variant="split"] {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      text-align: left;
+      gap: var(--space-xl);
+    }
+    
+    [data-component="hero"][data-variant="left"] {
+      text-align: left;
+      align-items: flex-start;
+    }
+    
+    /* Hero elements */
+    .hero__background {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+    }
+    
+    .hero__content {
+      max-width: 800px;
+      z-index: 1;
+    }
+    
+    .hero__title {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: bold;
+      margin-bottom: var(--space-lg);
+      line-height: 1.2;
+    }
+    
+    .hero__subtitle {
+      font-size: clamp(1.125rem, 2vw, 1.5rem);
+      margin-bottom: var(--space-xl);
+      opacity: 0.9;
+    }
+    
+    .hero__actions {
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    [data-component="hero"][data-variant="left"] .hero__actions,
+    [data-component="hero"][data-variant="split"] .hero__actions {
+      justify-content: flex-start;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      [data-component="hero"][data-variant="split"] {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .hero__actions {
+        justify-content: center;
+      }
+    }
+  </style>
+  
+  <div class="hero__background">
+    <slot name="background"><!-- Background image/video --></slot>
+  </div>
+  
+  <div class="hero__content">
+    <h1 class="hero__title">
+      <slot name="title">Hero Title</slot>
+    </h1>
+    
+    <p class="hero__subtitle">
+      <slot name="subtitle">Hero subtitle that explains the value proposition</slot>
+    </p>
+    
+    <div class="hero__actions">
+      <slot name="actions">
+        <button data-element="button" data-variant="primary">Get Started</button>
+        <button data-element="button" data-variant="secondary">Learn More</button>
+      </slot>
+    </div>
+  </div>
+  
+  <slot name="extra"><!-- Additional content like scroll indicator --></slot>
+</div>
+
+<!-- 
+Usage:
+<div data-component="hero" data-variant="centered" data-height="full">
+  <img slot="background" src="hero-bg.jpg" alt="">
+  <span slot="title">Welcome to RUN:REBEL</span>
+  <span slot="subtitle">Build better components faster</span>
+  <div slot="actions">
+    <button>Start Building</button>
+  </div>
+</div>
+-->

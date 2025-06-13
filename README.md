@@ -1,6 +1,4 @@
-# 🚀 RUN:REBEL - Component Intelligence System
-
-## Mínimo Máximo para Webflow
+# 🚀 RUN:UI.LIBRARY - Component Intelligence System - Webflow compatible
 
 Sistema híbrido inteligente que transforma cualquier código en componentes optimizados para Webflow.
 
